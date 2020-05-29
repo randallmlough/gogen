@@ -11,6 +11,13 @@ import (
 	"github.com/pkg/errors"
 )
 
+func MustLoadTemplate(pathToTemplate string) string {
+	contents, err := LoadTemplate(pathToTemplate)
+	if err != nil {
+		panic(err)
+	}
+	return contents
+}
 func LoadTemplate(pathToTemplate string) (string, error) {
 
 	b, err := ioutil.ReadFile(pathToTemplate)
