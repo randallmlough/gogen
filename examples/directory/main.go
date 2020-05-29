@@ -22,7 +22,7 @@ func main() {
 		Greeting:       "Hello to you too.",
 		PrimaryKey:     int(1),
 	}
-	dir := &gogen.Directory{
+	dir := &gogen.Dir{
 		OutputDir:    "examples/directory/output",
 		TemplateDir:  "examples/directory/templates",
 		TemplateData: data,

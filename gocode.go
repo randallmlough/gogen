@@ -68,7 +68,7 @@ func (g *Go) SetTemplateDataIfUnset(data interface{}) {
 	}
 }
 
-func (g *Go) Generate(cfg *Config) (File, error) {
+func (g *Go) Generate(cfg *Config) (Document, error) {
 
 	if err := cfg.check(); err != nil {
 		return nil, errors.Wrap(err, "config is improperly formatted")
@@ -152,7 +152,7 @@ func (g *Go) fileTemplate(cfg *Config) bytes.Buffer {
 	return header
 }
 
-func (g *Go) Write(file File) error {
+func (g *Go) Write(file Document) error {
 	if err := makeDir(filepath.Dir(file.Path())); err != nil {
 		return errors.Wrap(err, "failed to create directory")
 	}

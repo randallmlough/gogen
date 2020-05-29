@@ -54,7 +54,7 @@ func generateFile() error {
 	if err != nil {
 		return err
 	}
-	doc := &gogen.Document{
+	doc := &gogen.Doc{
 		Template:     contents,
 		Filename:     "examples/simple/output/file.yml",
 		TemplateData: data,

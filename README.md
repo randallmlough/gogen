@@ -8,6 +8,7 @@ Gogen, short for, Go Generate, is a simple file generation library written in Go
 - Code generation (dyanmic imports, dynamic types, etc.)
 - File bundling (multiple files get put into one file)
 - Bulk generation (generate whole directories and subdirectories)
+- List generation (generate n number of files based on inputs)
 
 ## Installation
 ```shell script
@@ -107,7 +108,7 @@ func main() {
 		FavoriteThings: []string{"dogs", "cold places", "sam"},
 	}
 	contents, _ := gogen.LoadTemplate("examples/simple/file.gotpl")
-	doc := &gogen.Document{
+	doc := &gogen.Doc{
 		Template:     contents,
 		Filename:     "examples/simple/output/file.yml",
 		TemplateData: data,
@@ -149,6 +150,7 @@ favorites:
 
 ## Generating files from a directory
 [DIRECTORY EXAMPLE](github.com/randallmlough/gogen/examples/directory)
+
 Let's say we have the following project structure...
 
 ```shell script
@@ -180,10 +182,9 @@ func main() {
 		Greeting:       "Hello to you too.",
 		PrimaryKey:     int(1),
 	}
-	dir := &gogen.Directory{
+	dir := &gogen.Dir{
 		OutputDir:   "examples/directory/output",
 		TemplateDir: "examples/directory/templates",
-		Data:        data,
 	}
 	if err := gogen.Generate(dir, gogen.SkipChildren(false)); err != nil {
 		log.Fatal(err)
@@ -202,10 +203,12 @@ Output structure
 ```
 
 The big difference between generating a single file and multiple files is the data you are passing into each template. When you generate a single file you can be selective on the data you pass in, but when you generate from a directory, the data will be shared across all the templates. However, that's rarely an issue.
+
 [DIRECTORY EXAMPLE](github.com/randallmlough/gogen/examples/directory)
 
 ### Bundling files
 [BUNDLE EXAMPLE](github.com/randallmlough/gogen/examples/bundles)
+
 We can also bundle any number of files into one file.
 
 ```shell script
@@ -247,22 +250,23 @@ func main(){
 │   ├── bundle.go
 ```
 Super cool!
+
 [BUNDLE EXAMPLE](github.com/randallmlough/gogen/examples/bundles)
 
 ## Extending gogen
 By design, gogen accepts and returns interfaces for most of the heavy lifting. So as long as you fulfill the `Gen` and `File` interface you can extend gogen however you see fit.  
 
 The three core interfaces are:
-The `Gen` interface builds and creates the data and returns the `File` interface
+The `File` interface builds and creates the data and returns the `Document` interface
 ```go
-type Gen interface {
-	Generate(cfg *Config) (File, error)
+type File interface {
+	Generate(cfg *Config) (Document, error)
 }
 ```
 
 The `File` interface is a simple interface that just tells gogen where to put this file, and the data to write into it.
 ```go
-type File interface {
+type Document interface {
 	Path() string
 	Data
 }
@@ -272,20 +276,20 @@ type Data interface {
 }
 ```
 
-The `FileWriter` interface is an optional interface. Gogen will attempt to write the file if your type hasn't implemented it, but if you need a custom writing procedure to be done, like our `Go` type does, then implement this interface as well.
+The `DocWriter` interface is an optional interface. Gogen will attempt to write the file if your type hasn't implemented it, but if you need a custom writing procedure to be done, like our `Go` type does, then implement this interface as well.
 ```go
-type FileWriter interface {
-	Write(file File) error
+type DocWriter interface {
+	Write(file Document) error
 }
 ```
 
 ## Roadmap
-- Base file templating (conditional file generation)
-- List generation (generate n number of files from a list, like contacts)
-- Plugin support
-- More documentation
-- More tests
-- Further cleanup
+- [ ] Base file templating (conditional file generation)
+- [x] List generation (generate n number of files from a list, like contacts)
+- [ ] Plugin support
+- [ ] More documentation
+- [ ] More tests
+- [ ] Further cleanup
 
 ## Credit
 This library has been heavily inspired by [gqlgen](https://github.com/99designs/gqlgen). They did an amazing job at setting the foundation for this library and showing what's possible. 
