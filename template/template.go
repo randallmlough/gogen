@@ -56,7 +56,7 @@ func (t *Template) ParseTemplate(pathToTemplate string) (*Template, error) {
 	return t.Parse(string(b))
 }
 
-func (t *Template) GatherBundles(rootDir string, skipChildren bool) (*Template, error) {
+func (t *Template) GatherBundles(rootDir, templateExtension string, skipChildren bool) (*Template, error) {
 	tt := t.clone()
 	bundles := []string{}
 	err := filepath.Walk(rootDir, func(path string, info os.FileInfo, err error) error {
@@ -68,7 +68,7 @@ func (t *Template) GatherBundles(rootDir string, skipChildren bool) (*Template, 
 			return filepath.SkipDir
 		}
 		templateName := filepath.ToSlash(strings.TrimPrefix(path, rootDir+string(os.PathSeparator)))
-		if !strings.HasSuffix(info.Name(), ".gotpl") {
+		if !strings.HasSuffix(info.Name(), templateExtension) {
 			return nil
 		}
 
@@ -84,7 +84,7 @@ func (t *Template) GatherBundles(rootDir string, skipChildren bool) (*Template, 
 	if err != nil {
 		return tt, errors.Wrap(err, "failed to gather bundles")
 	}
-	sortTemplates(bundles)
+	sortTemplates(bundles, templateExtension)
 	tt.bundles = bundles
 	return tt, nil
 }
@@ -93,7 +93,7 @@ func (t *Template) Execute(filename string, data interface{}) (*bytes.Buffer, er
 	var buf bytes.Buffer
 	err := t.template.Execute(&buf, data)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, filename)
 	}
 	return &buf, nil
 }
@@ -130,14 +130,14 @@ func (t *Template) ExecuteBundles(data interface{}, addRegionTag bool) (*bytes.B
 	return &buf, nil
 }
 
-func sortTemplates(bundles []string) {
+func sortTemplates(bundles []string, templateExtension string) {
 	// then execute all the important looking ones in order, adding them to the same file
 	sort.Slice(bundles, func(i, j int) bool {
 		// important files go first
-		if strings.HasSuffix(bundles[i], "!.gotpl") {
+		if strings.HasSuffix(bundles[i], "!"+templateExtension) {
 			return true
 		}
-		if strings.HasSuffix(bundles[j], "!.gotpl") {
+		if strings.HasSuffix(bundles[j], "!"+templateExtension) {
 			return false
 		}
 		return bundles[i] < bundles[j]

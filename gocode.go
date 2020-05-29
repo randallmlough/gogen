@@ -62,6 +62,11 @@ func (g *Go) Bytes() []byte {
 	return g.data.Bytes()
 }
 func (g *Go) Generate(cfg *Config) (File, error) {
+
+	if err := cfg.check(); err != nil {
+		return nil, errors.Wrap(err, "config is improperly formatted")
+	}
+
 	if gocode.CurrentImports != nil {
 		panic(fmt.Errorf("recursive or concurrent call to RenderToFile detected"))
 	}
@@ -73,7 +78,7 @@ func (g *Go) Generate(cfg *Config) (File, error) {
 	if g.Template != "" {
 		t := template.New("").Funcs(g.Funcs)
 		var err error
-		t, err = t.Add("goTemplate.gotpl").Parse(g.Template)
+		t, err = t.Add("goTemplate" + cfg.TemplateExtensionSuffix).Parse(g.Template)
 		if err != nil {
 			return nil, errors.Wrap(err, "error with provided template")
 		}
@@ -92,7 +97,7 @@ func (g *Go) Generate(cfg *Config) (File, error) {
 		t := template.New("").Funcs(g.Funcs)
 
 		var err error
-		t, err = t.GatherBundles(rootDir, true)
+		t, err = t.GatherBundles(rootDir, cfg.TemplateExtensionSuffix, cfg.SkipChildren)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to gather go bundle")
 		}
@@ -147,7 +152,7 @@ func (g *Go) Write(file File) error {
 
 	formatted, err := imports.Prune(file.Path(), file.Bytes(), g.packages)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "gofmt failed on %s: %s\n", filepath.Base(file.Path()), err.Error())
+		_, _ = fmt.Fprintf(os.Stderr, "gofmt failed on %s: %s\n", filepath.Base(file.Path()), err.Error())
 		formatted = file.Bytes()
 	}
 	if err := createFile(file.Path(), formatted); err != nil {
