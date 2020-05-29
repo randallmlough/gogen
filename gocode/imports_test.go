@@ -1,7 +1,6 @@
 package gocode
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -21,9 +20,6 @@ func TestImportPathForDir(t *testing.T) {
 	// doesnt contain go code, but should still give a valid import path
 	assert.Equal(t, "github.com/randallmlough/gogen/docs", ImportPathForDir(filepath.Join(wd, "..", "docs")))
 
-	// directory does not exist
-	assert.Equal(t, "github.com/randallmlough/dos", ImportPathForDir(filepath.Join(wd, "..", "..", "dos")))
-
 	if runtime.GOOS == "windows" {
 		assert.Equal(t, "", ImportPathForDir("C:/doesnotexist"))
 	} else {
@@ -34,9 +30,7 @@ func TestImportPathForDir(t *testing.T) {
 func TestNameForDir(t *testing.T) {
 	wd, err := os.Getwd()
 	require.NoError(t, err)
-	fmt.Println("WD", wd)
 	assert.Equal(t, "tmp", NameForDir("/tmp"))
 	assert.Equal(t, "gocode", NameForDir(wd))
 	assert.Equal(t, "gogen", NameForDir(wd+"/.."))
-	assert.Equal(t, "randallmlough", NameForDir(wd+"/../.."))
 }
