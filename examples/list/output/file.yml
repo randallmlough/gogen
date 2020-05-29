@@ -1,0 +1,9 @@
+name: john snow
+location: the wall
+# make sure to checkout the template. I was conditionally rendered
+
+favorites:
+- dogs
+- cold places
+- sam
+
