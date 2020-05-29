@@ -123,7 +123,12 @@ func (g *Go) fileTemplate(cfg *Config) bytes.Buffer {
 		header.WriteString(cfg.Description + "\n")
 	}
 	header.WriteString("package ")
-	header.WriteString(g.PackageName)
+
+	pkgName := g.PackageName
+	if pkgName == "" {
+		pkgName = gocode.PackageNameFromFile(g.Filename)
+	}
+	header.WriteString(pkgName)
 	header.WriteString("\n\n")
 	if cfg.FileNotice {
 		header.WriteString(cfg.FileNoticeText)
