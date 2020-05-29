@@ -35,12 +35,16 @@ func (doc *Document) Bytes() []byte {
 
 func (doc *Document) Generate(cfg *Config) (File, error) {
 
+	if err := cfg.check(); err != nil {
+		return nil, errors.Wrap(err, "config is improperly formatted")
+	}
+
 	var buf *bytes.Buffer
 	var err error
 	if doc.Template != "" {
 		t := template.New("").Funcs(doc.Funcs)
 		var err error
-		t, err = t.Add("fileTemplate.gotpl").Parse(doc.Template)
+		t, err = t.Add("fileTemplate" + cfg.TemplateExtensionSuffix).Parse(doc.Template)
 		if err != nil {
 			return nil, errors.Wrap(err, "error with provided template")
 		}
@@ -59,7 +63,7 @@ func (doc *Document) Generate(cfg *Config) (File, error) {
 		t := template.New("").Funcs(doc.Funcs)
 
 		var err error
-		t, err = t.GatherBundles(rootDir, true)
+		t, err = t.GatherBundles(rootDir, cfg.TemplateExtensionSuffix, cfg.SkipChildren)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to gather document bundle")
 		}

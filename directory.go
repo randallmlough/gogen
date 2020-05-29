@@ -22,6 +22,11 @@ func (d *Directory) Name() string {
 
 // walk directories and create templates from files
 func (d *Directory) Generate(cfg *Config) (File, error) {
+
+	if err := cfg.check(); err != nil {
+		return nil, errors.Wrap(err, "config is improperly formatted")
+	}
+
 	ff, err := d.Files(cfg)
 	if err != nil {
 		return nil, err
@@ -55,7 +60,7 @@ func (d *Directory) Files(cfg *Config) ([]fileable, error) {
 			return filepath.SkipDir
 		}
 
-		if !strings.HasSuffix(info.Name(), ".gotpl") {
+		if !strings.HasSuffix(info.Name(), cfg.TemplateExtensionSuffix) {
 			return nil
 		}
 
@@ -63,7 +68,7 @@ func (d *Directory) Files(cfg *Config) ([]fileable, error) {
 		if err != nil {
 			return err
 		}
-		path = strings.TrimSuffix(path, ".gotpl")
+		path = strings.TrimSuffix(path, cfg.TemplateExtensionSuffix)
 
 		if d.OutputDir != "" {
 			path = strings.Replace(path, rootDir, d.OutputDir, 1)
