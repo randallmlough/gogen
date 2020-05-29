@@ -1,6 +1,7 @@
 package gocode
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -33,7 +34,7 @@ func TestImportPathForDir(t *testing.T) {
 func TestNameForDir(t *testing.T) {
 	wd, err := os.Getwd()
 	require.NoError(t, err)
-
+	fmt.Println("WD", wd)
 	assert.Equal(t, "tmp", NameForDir("/tmp"))
 	assert.Equal(t, "gocode", NameForDir(wd))
 	assert.Equal(t, "gogen", NameForDir(wd+"/.."))
