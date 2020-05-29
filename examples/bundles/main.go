@@ -38,7 +38,7 @@ func generateFile() error {
 		"FavoriteThings": []string{"organization", "fun code"},
 		"PartTwo":        "oh the possibilities",
 	}
-	gocode := &gogen.Document{
+	gocode := &gogen.Doc{
 		Bundle:       "examples/bundles/templates/file",
 		Filename:     "examples/bundles/output/bundle.yml",
 		TemplateData: data,

@@ -16,11 +16,11 @@ var files = []gogen.List{
 		Filename: "examples/list/output/gocode.go",
 		Template: gogen.MustLoadTemplate("examples/list/templates/gocode.go.gotpl"),
 	},
-	&gogen.Document{
+	&gogen.Doc{
 		Filename: "examples/list/output/file.yml",
 		Template: gogen.MustLoadTemplate("examples/list/templates/file.yml.gotpl"),
 	},
-	&gogen.Directory{
+	&gogen.Dir{
 		OutputDir:   "examples/list/output/types",
 		TemplateDir: "examples/list/templates/types",
 	},

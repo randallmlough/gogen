@@ -8,7 +8,37 @@ import (
 	"runtime"
 )
 
-type Document struct {
+type Document interface {
+	Path() string
+	Data
+}
+
+type Data interface {
+	Bytes() []byte
+}
+
+type DocWriter interface {
+	Write(file Document) error
+}
+
+type Docs []Document
+
+// should never be called. Used to implement Document interface
+func (d Docs) Bytes() []byte {
+	return nil
+}
+
+// should never be called. Used to implement Document interface
+func (d Docs) String() string {
+	return ""
+}
+
+// should never be called. Used to implement Document interface
+func (d Docs) Path() string {
+	return ""
+}
+
+type Doc struct {
 	// Template is a string of the entire template that
 	// will be parsed and rendered. If it's empty,
 	// the plugin processor will look for .gotpl files
@@ -25,21 +55,21 @@ type Document struct {
 	data         Data
 }
 
-func (doc *Document) Path() string {
+func (doc *Doc) Path() string {
 	return doc.Filename
 }
 
-func (doc *Document) Bytes() []byte {
+func (doc *Doc) Bytes() []byte {
 	return doc.data.Bytes()
 }
 
-func (doc *Document) SetTemplateDataIfUnset(data interface{}) {
+func (doc *Doc) SetTemplateDataIfUnset(data interface{}) {
 	if doc.TemplateData == nil {
 		doc.TemplateData = data
 	}
 }
 
-func (doc *Document) Generate(cfg *Config) (File, error) {
+func (doc *Doc) Generate(cfg *Config) (Document, error) {
 
 	if err := cfg.check(); err != nil {
 		return nil, errors.Wrap(err, "config is improperly formatted")
@@ -89,7 +119,7 @@ func (doc *Document) Generate(cfg *Config) (File, error) {
 	return doc, nil
 }
 
-func (doc *Document) fileTemplate(cfg *Config) bytes.Buffer {
+func (doc *Doc) fileTemplate(cfg *Config) bytes.Buffer {
 	var header bytes.Buffer
 	if cfg.GeneratedHeader {
 		header.WriteString(cfg.generatedText)
