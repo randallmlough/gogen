@@ -9,15 +9,21 @@ import (
 )
 
 type Directory struct {
-	OutputDir   string
-	TemplateDir string
-	Data        interface{}
+	OutputDir    string
+	TemplateDir  string
+	TemplateData interface{}
 }
 
 var _ Gen = (*Directory)(nil)
 
 func (d *Directory) Name() string {
 	return d.OutputDir
+}
+
+func (d *Directory) SetTemplateDataIfUnset(data interface{}) {
+	if d.TemplateData == nil {
+		d.TemplateData = data
+	}
 }
 
 // walk directories and create templates from files
@@ -80,14 +86,14 @@ func (d *Directory) Files(cfg *Config) ([]fileable, error) {
 				Template:     contents,
 				Filename:     path,
 				PackageName:  gocode.PackageNameFromFile(path),
-				TemplateData: d.Data,
+				TemplateData: d.TemplateData,
 			}
 			files = append(files, &code)
 		default:
 			file := Document{
 				Template:     contents,
 				Filename:     path,
-				TemplateData: d.Data,
+				TemplateData: d.TemplateData,
 			}
 			files = append(files, &file)
 		}

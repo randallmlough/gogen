@@ -1,0 +1,14 @@
+name: {{.Name}}
+location: {{.Location}}
+{{- if .Age }}
+age: {{.Age}}
+{{ else }}
+# make sure to checkout the template. I was conditionally rendered
+{{ end -}}
+
+{{- with .FavoriteThings}}
+favorites:
+{{ range . -}}
+- {{.}}
+{{ end }}
+{{ end -}}

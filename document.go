@@ -33,6 +33,12 @@ func (doc *Document) Bytes() []byte {
 	return doc.data.Bytes()
 }
 
+func (doc *Document) SetTemplateDataIfUnset(data interface{}) {
+	if doc.TemplateData == nil {
+		doc.TemplateData = data
+	}
+}
+
 func (doc *Document) Generate(cfg *Config) (File, error) {
 
 	if err := cfg.check(); err != nil {

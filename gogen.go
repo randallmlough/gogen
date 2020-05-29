@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+type List interface {
+	SetTemplateDataIfUnset(data interface{})
+	Generate(cfg *Config) (File, error)
+}
+
 type Gen interface {
 	Generate(cfg *Config) (File, error)
 }

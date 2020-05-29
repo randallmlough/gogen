@@ -23,9 +23,9 @@ func main() {
 		PrimaryKey:     int(1),
 	}
 	dir := &gogen.Directory{
-		OutputDir:   "examples/directory/output",
-		TemplateDir: "examples/directory/templates",
-		Data:        data,
+		OutputDir:    "examples/directory/output",
+		TemplateDir:  "examples/directory/templates",
+		TemplateData: data,
 	}
 	if err := gogen.Generate(dir, gogen.SkipChildren(false)); err != nil {
 		log.Fatal(err)

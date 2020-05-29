@@ -61,6 +61,13 @@ func (g *Go) Path() string {
 func (g *Go) Bytes() []byte {
 	return g.data.Bytes()
 }
+
+func (g *Go) SetTemplateDataIfUnset(data interface{}) {
+	if g.TemplateData == nil {
+		g.TemplateData = data
+	}
+}
+
 func (g *Go) Generate(cfg *Config) (File, error) {
 
 	if err := cfg.check(); err != nil {
