@@ -26,7 +26,7 @@ func generateGoCode() error {
 	gocode := &gogen.Go{
 		Template:     contents,
 		Filename:     "examples/simple/output/hello.go",
-		PackageName:  "testing",
+		PackageName:  "testing", // you can be explicit or let us guess based on the path
 		TemplateData: data,
 	}
 
