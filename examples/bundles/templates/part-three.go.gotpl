@@ -1,0 +1,5 @@
+{{ reserveImport "context"  }}
+
+func partThree_MultipleImports(ctx context.Context) {
+    fmt.Println(ctx.Value("{{$.PartThreeCtxValue}}"))
+}

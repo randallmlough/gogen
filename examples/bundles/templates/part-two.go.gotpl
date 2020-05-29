@@ -1,0 +1,7 @@
+{{ reserveImport "fmt"  }}
+
+func partTwo() {
+    fmt.Println("what's 1 + 1?")
+    answer := {{$.PartTwoAnswer}}
+    fmt.Println("Answer:", answer)
+}

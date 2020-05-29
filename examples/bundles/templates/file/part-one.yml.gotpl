@@ -1,0 +1,8 @@
+part_one: {{$.PartOne}}
+
+{{- with  $.FavoriteThings}}
+favs:
+{{- range . }}
+- {{ . -}}
+{{ end }}
+{{end -}}

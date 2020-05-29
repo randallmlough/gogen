@@ -1,0 +1,21 @@
+{{ reserveImport "fmt"  }}
+{{ reserveImport "strconv"  }}
+// we can even import remote code
+{{ reserveImport "github.com/iancoleman/strcase" }}
+
+// make conditional functions. Conversion helpers is a great use case here
+func IDToGraphQL(column, tableName string) string {
+    return strcase.ToLowerCamel(tableName) + "-" + column
+}
+
+// render dynamic funcs
+{{- if eq (typeOf $.PrimaryKey).String "int"}}
+func IDToString(id {{typeOf $.PrimaryKey}}) string {
+    return strconv.Itoa(id)
+}
+{{ else }}
+func IDToInt(id {{typeOf $.PrimaryKey}}) int {
+    i, _ := strconv.Atoi(id)
+    return i
+}
+{{ end -}}

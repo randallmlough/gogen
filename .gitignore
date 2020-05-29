@@ -1,0 +1,9 @@
+# logs and outputs
+*.test
+*.out
+
+# IDEs
+.idea/
+
+# misc
+.DS_Store
