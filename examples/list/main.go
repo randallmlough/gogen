@@ -1,6 +1,9 @@
 package main
 
-import "github.com/randallmlough/gogen"
+import (
+	"github.com/randallmlough/gogen"
+	"strings"
+)
 
 type Data struct {
 	Name           string
@@ -11,7 +14,7 @@ type Data struct {
 	PrimaryKey     interface{}
 }
 
-var files = []gogen.List{
+var files = []gogen.File{
 	&gogen.Go{
 		Filename: "examples/list/output/gocode.go",
 		Template: gogen.MustLoadTemplate("examples/list/templates/gocode.go.gotpl"),
@@ -40,10 +43,13 @@ func main() {
 	}
 }
 
-func generateFiles(files []gogen.List, data *Data) error {
+func generateFiles(files []gogen.File, data *Data) error {
 	for _, file := range files {
-		file.SetTemplateDataIfUnset(data)
-		if err := gogen.Generate(file); err != nil {
+		if err := gogen.Generate(file,
+			gogen.SetGlobalTemplateData(data),
+			gogen.SetGlobalFuncMap(map[string]interface{}{
+				"downcase": strings.ToLower,
+			})); err != nil {
 			return err
 		}
 	}

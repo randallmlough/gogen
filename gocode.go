@@ -37,7 +37,7 @@ type Go struct {
 	data         Data
 }
 
-func (g *Go) init() {
+func (g *Go) init(cfg *Config) {
 	if g.packages == nil {
 		g.packages = &gocode.Packages{}
 	}
@@ -48,6 +48,9 @@ func (g *Go) init() {
 	gocode.CurrentImports = &gocode.Imports{Packages: g.packages, DestDir: filepath.Dir(g.Filename)}
 
 	funcs := gocode.Funcs()
+	for n, f := range cfg.TemplateFuncs {
+		funcs[n] = f
+	}
 	for n, f := range g.Funcs {
 		funcs[n] = f
 	}
@@ -62,12 +65,6 @@ func (g *Go) Bytes() []byte {
 	return g.data.Bytes()
 }
 
-func (g *Go) SetTemplateDataIfUnset(data interface{}) {
-	if g.TemplateData == nil {
-		g.TemplateData = data
-	}
-}
-
 func (g *Go) Generate(cfg *Config) (Document, error) {
 
 	if err := cfg.check(); err != nil {
@@ -78,10 +75,14 @@ func (g *Go) Generate(cfg *Config) (Document, error) {
 		panic(fmt.Errorf("recursive or concurrent call to RenderToFile detected"))
 	}
 
-	g.init()
+	g.init(cfg)
 
 	var buf *bytes.Buffer
 	var err error
+	tData := cfg.TemplateData
+	if g.TemplateData != nil {
+		tData = g.TemplateData
+	}
 	if g.Template != "" {
 		t := template.New("").Funcs(g.Funcs)
 		var err error
@@ -90,7 +91,7 @@ func (g *Go) Generate(cfg *Config) (Document, error) {
 			return nil, errors.Wrap(err, "error with provided template")
 		}
 
-		buf, err = t.Execute(g.Filename, g.TemplateData)
+		buf, err = t.Execute(g.Filename, tData)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to create go file")
 		}
@@ -109,7 +110,7 @@ func (g *Go) Generate(cfg *Config) (Document, error) {
 			return nil, errors.Wrap(err, "failed to gather go bundle")
 		}
 
-		buf, err = t.ExecuteBundles(g.TemplateData, cfg.RegionTags)
+		buf, err = t.ExecuteBundles(tData, cfg.RegionTags)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to build go bundle")
 		}

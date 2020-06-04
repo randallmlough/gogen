@@ -3,7 +3,7 @@ location: {{.Location}}
 {{- if .Age }}
 age: {{.Age}}
 {{ else }}
-# make sure to checkout the template. I was conditionally rendered
+# {{downcase "I WAS CONDITIONALLY RENDERED AND IN ALL CAPS BEFORE RENDERING"}}
 {{ end -}}
 
 {{- with .FavoriteThings}}

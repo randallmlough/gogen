@@ -63,20 +63,21 @@ func (doc *Doc) Bytes() []byte {
 	return doc.data.Bytes()
 }
 
-func (doc *Doc) SetTemplateDataIfUnset(data interface{}) {
-	if doc.TemplateData == nil {
-		doc.TemplateData = data
-	}
-}
-
 func (doc *Doc) Generate(cfg *Config) (Document, error) {
 
 	if err := cfg.check(); err != nil {
 		return nil, errors.Wrap(err, "config is improperly formatted")
 	}
 
+	doc.init(cfg)
+
 	var buf *bytes.Buffer
 	var err error
+	tData := cfg.TemplateData
+	if doc.TemplateData != nil {
+		tData = doc.TemplateData
+	}
+
 	if doc.Template != "" {
 		t := template.New("").Funcs(doc.Funcs)
 		var err error
@@ -85,7 +86,7 @@ func (doc *Doc) Generate(cfg *Config) (Document, error) {
 			return nil, errors.Wrap(err, "error with provided template")
 		}
 
-		buf, err = t.Execute(doc.Filename, doc.TemplateData)
+		buf, err = t.Execute(doc.Filename, tData)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to generate single go file")
 		}
@@ -104,7 +105,7 @@ func (doc *Doc) Generate(cfg *Config) (Document, error) {
 			return nil, errors.Wrap(err, "failed to gather document bundle")
 		}
 
-		buf, err = t.ExecuteBundles(doc.TemplateData, cfg.RegionTags)
+		buf, err = t.ExecuteBundles(tData, cfg.RegionTags)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to build document bundle")
 		}
@@ -132,4 +133,15 @@ func (doc *Doc) fileTemplate(cfg *Config) bytes.Buffer {
 		header.WriteString("\n\n")
 	}
 	return header
+}
+
+func (doc *Doc) init(cfg *Config) {
+	funcs := make(template.FuncMap)
+	for n, f := range cfg.TemplateFuncs {
+		funcs[n] = f
+	}
+	for n, f := range cfg.TemplateFuncs {
+		funcs[n] = f
+	}
+	doc.Funcs = funcs
 }

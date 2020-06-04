@@ -20,12 +20,6 @@ func (d *Dir) Name() string {
 	return d.OutputDir
 }
 
-func (d *Dir) SetTemplateDataIfUnset(data interface{}) {
-	if d.TemplateData == nil {
-		d.TemplateData = data
-	}
-}
-
 // walk directories and create templates from files
 func (d *Dir) Generate(cfg *Config) (Document, error) {
 

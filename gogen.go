@@ -4,12 +4,8 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"path/filepath"
+	"text/template"
 )
-
-type List interface {
-	SetTemplateDataIfUnset(data interface{})
-	Generate(cfg *Config) (Document, error)
-}
 
 type File interface {
 	Generate(cfg *Config) (Document, error)
@@ -49,6 +45,20 @@ func SetTemplateExtension(extension string) Option {
 			return ErrTemplateExtensionEmpty
 		}
 		cfg.TemplateExtensionSuffix = extension
+		return nil
+	})
+}
+
+func SetGlobalTemplateData(templateData interface{}) Option {
+	return optionFunc(func(cfg *Config) error {
+		cfg.TemplateData = templateData
+		return nil
+	})
+}
+
+func SetGlobalFuncMap(funcs template.FuncMap) Option {
+	return optionFunc(func(cfg *Config) error {
+		cfg.TemplateFuncs = funcs
 		return nil
 	})
 }

@@ -1,6 +1,6 @@
 name: john snow
 location: the wall
-# make sure to checkout the template. I was conditionally rendered
+# i was conditionally rendered and in all caps before rendering
 
 favorites:
 - dogs
